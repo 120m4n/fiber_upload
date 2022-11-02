@@ -1,0 +1,2 @@
+DB_NAME=figo DB_USER=fiberuser DB_PASS=Most_Postgres_servers DB_HOST=127.0.0.1 DB_MIGRATE=true go run .
+export DB_NAME=figo DB_USER=fiberuser DB_PASS=Most_Postgres_servers DB_HOST=127.0.0.1 go run .

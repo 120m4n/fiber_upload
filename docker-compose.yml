@@ -7,11 +7,26 @@ services:
     image: mysql
     restart: always
     environment:
+      MYSQL_DATABASE: figo
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: tonijas
-      MYSQL_PASSWORD: laverde
+      MYSQL_USER: fiberuser
+      MYSQL_PASSWORD: Most_Postgres_servers
     ports:
       - 3306:3306
+  server:
+    build: .
+    ports:
+      - 3000:3000
+    depends_on:
+      - db
+    volumes:
+      - ./uploads:/app/uploads
+    environment:
+      - DB_HOST=db
+      - DB_USER=fiberuser
+      - DB_PASS=Most_Postgres_servers
+      - DB_NAME=figo
+      - DB_PORT=3306
 
   adminer:
     image: adminer
