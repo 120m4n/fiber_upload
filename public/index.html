@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* show class for toast */
+        .show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* hide class for toast */
+        .hide {
+            opacity: 0;
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    <form  id="say-hi">
+        <input 
+            type="file"
+            id="file" 
+            name="attachment" 
+            onchange="Filevalidation()"
+            />
+        <button 
+            name="button" 
+            type="button" 
+            onclick="uploadFile()"
+            disabled>Click Here</button>  
+    </form>
+      
+
+    <p id="size"></p> 
+    <div id="snackbar" class="hide">Message</div>  
+    <script>
+        const Filevalidation = () => {
+            var fileInput = document.getElementById('file');
+             
+            var filePath = fileInput.value;
+         
+            // Allowing file type
+            var allowedExtensions = /(\.doc|\.docx|\.exe|\.pdf|\.zip)$/i;
+             
+            if (!allowedExtensions.exec(filePath)) {
+                alert('Invalid file type');
+                document.querySelector('button[type="button"]').disabled = true;
+                fileInput.value = '';
+                return false;
+            } else{
+                // enable button
+                document.querySelector('button[type="button"]').disabled = false;
+            }
+
+        }
+        // upload file size validation
+        const FileSize = () => {
+            var fi = document.getElementById('file'); // GET THE FILE INPUT.
+            // Validate if File[0] is less than 100 MB. otherwise show error
+            if (fi.files[0].size > 100000000) {
+                alert("File too big, please select a file less than 100mb");
+                return false;
+            } else {
+                return true;
+            }
+        }
+        // upload file with fetch
+        const uploadFile = () => {
+            const file = document.getElementById('file').files[0];
+            // check file otherwise exit
+            if (!file || FileSize() == false) {
+                clearFile();
+                return;
+            }
+            const formData = new FormData();
+            formData.append('attachment', file);
+            fetch('/expenses/2/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data)
+                document.querySelector('button[type="button"]').disabled = false;
+                var fileInput = document.getElementById('file');
+                fileInput.value = '';
+                // show toast
+                toast(data.message);
+            })
+            .catch(err => {
+                console.log(err)
+                document.querySelector('button[type="button"]').disabled = false;
+                var fileInput = document.getElementById('file');
+                fileInput.value = '';
+            })
+        }
+
+        // clear file input value and block button
+        const clearFile = () => {
+            var fileInput = document.getElementById('file');
+            fileInput.value = '';
+            document.querySelector('button[type="button"]').disabled = true;
+        }
+
+        // create a toast message and show it
+        const toast = (message) => {
+            var x = document.getElementById("snackbar");
+            x.innerHTML = message;
+            x.className = "show";
+            setTimeout(function(){ x.className = x.className.replace("show", "hide"); }, 3000);
+        }
+
+    </script>
+</body>
+</html>
